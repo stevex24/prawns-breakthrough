@@ -79,6 +79,11 @@ class GameScene extends Phaser.Scene {
 
             prawn.setDisplaySize(50, 50);
 
+            // Black's prawns use the same artwork with a dark tint.
+            if (color === 0x333333) {
+                prawn.setTint(0x596273);
+            }
+
             return prawn;
         }
 
@@ -119,9 +124,9 @@ class GameScene extends Phaser.Scene {
             whiteB: this.makePawn("b5", 0xffffff, true),
             whiteC: this.makePawn("c5", 0xffffff, true),
 
-            blackA: this.makePawn("a7", 0x333333),
-            blackB: this.makePawn("b7", 0x333333),
-            blackC: this.makePawn("c7", 0x333333),
+            blackA: this.makePawn("a7", 0x333333, true),
+            blackB: this.makePawn("b7", 0x333333, true),
+            blackC: this.makePawn("c7", 0x333333, true),
 
             whiteKing: this.makeKing("e1", "#ffffff"),
             blackKing: this.makeKing("e3", "#111111")
@@ -146,13 +151,30 @@ class GameScene extends Phaser.Scene {
         const target = this.square(destination);
 
         return new Promise(resolve => {
+            // A tiny repeated rocking motion suggests comic crawling.
+            const scuttle = this.tweens.add({
+                targets: piece,
+                angle: {
+                    from: -6,
+                    to: 6
+                },
+                duration: 110,
+                yoyo: true,
+                repeat: -1
+            });
+
             this.tweens.add({
                 targets: piece,
                 x: target.x,
                 y: target.y,
                 duration: duration,
                 ease: "Sine.easeInOut",
-                onComplete: resolve
+
+                onComplete: () => {
+                    scuttle.stop();
+                    piece.setAngle(0);
+                    resolve();
+                }
             });
         });
     }
