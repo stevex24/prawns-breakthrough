@@ -1,3 +1,160 @@
+
+// BEGIN SPECIAL ORDER OVERLAY
+function addSpecialOrderOverlay(scene) {
+    const depth = 1000;
+
+    // --------------------------------------------------------
+    // Customer speech bubble
+    // --------------------------------------------------------
+    const bubbleX = 55;
+    const bubbleY = 38;
+    const bubbleWidth = 265;
+    const bubbleHeight = 72;
+
+    const bubble = scene.add.graphics().setDepth(depth);
+
+    bubble.fillStyle(0xffffff, 0.98);
+    bubble.lineStyle(3, 0x242424, 1);
+
+    bubble.fillRoundedRect(
+        bubbleX,
+        bubbleY,
+        bubbleWidth,
+        bubbleHeight,
+        15
+    );
+
+    bubble.strokeRoundedRect(
+        bubbleX,
+        bubbleY,
+        bubbleWidth,
+        bubbleHeight,
+        15
+    );
+
+    // Speech-bubble tail.
+    bubble.fillStyle(0xffffff, 0.98);
+    bubble.fillTriangle(
+        bubbleX + 66,
+        bubbleY + bubbleHeight - 1,
+        bubbleX + 99,
+        bubbleY + bubbleHeight - 1,
+        bubbleX + 78,
+        bubbleY + bubbleHeight + 25
+    );
+
+    bubble.lineStyle(3, 0x242424, 1);
+    bubble.beginPath();
+    bubble.moveTo(
+        bubbleX + 66,
+        bubbleY + bubbleHeight - 1
+    );
+    bubble.lineTo(
+        bubbleX + 78,
+        bubbleY + bubbleHeight + 25
+    );
+    bubble.lineTo(
+        bubbleX + 99,
+        bubbleY + bubbleHeight - 1
+    );
+    bubble.strokePath();
+
+    scene.add.text(
+        bubbleX + 24,
+        bubbleY + 22,
+        "I'll have the special.",
+        {
+            fontFamily: "Georgia, serif",
+            fontSize: "22px",
+            color: "#161616",
+            fontStyle: "italic"
+        }
+    ).setDepth(depth + 1);
+
+    // --------------------------------------------------------
+    // Checkmate Café menu
+    // --------------------------------------------------------
+    const menuX = 515;
+    const menuY = 42;
+    const menuWidth = 245;
+    const menuHeight = 205;
+
+    const menu = scene.add.graphics().setDepth(depth);
+
+    // Wooden outer frame.
+    menu.fillStyle(0x684323, 1);
+    menu.fillRoundedRect(
+        menuX,
+        menuY,
+        menuWidth,
+        menuHeight,
+        12
+    );
+
+    // Dark chalkboard interior.
+    menu.fillStyle(0x18352f, 1);
+    menu.fillRoundedRect(
+        menuX + 10,
+        menuY + 10,
+        menuWidth - 20,
+        menuHeight - 20,
+        8
+    );
+
+    menu.lineStyle(2, 0xe0bd74, 1);
+    menu.strokeRoundedRect(
+        menuX + 15,
+        menuY + 15,
+        menuWidth - 30,
+        menuHeight - 30,
+        6
+    );
+
+    scene.add.text(
+        menuX + menuWidth / 2,
+        menuY + 25,
+        "CHECKMATE CAFÉ",
+        {
+            fontFamily: "Georgia, serif",
+            fontSize: "19px",
+            fontStyle: "bold",
+            color: "#f4df9b"
+        }
+    )
+        .setOrigin(0.5, 0)
+        .setDepth(depth + 1);
+
+    scene.add.text(
+        menuX + menuWidth / 2,
+        menuY + 72,
+        "TODAY'S SPECIAL",
+        {
+            fontFamily: "Georgia, serif",
+            fontSize: "17px",
+            color: "#ffd866"
+        }
+    )
+        .setOrigin(0.5, 0)
+        .setDepth(depth + 1);
+
+    scene.add.text(
+        menuX + menuWidth / 2,
+        menuY + 112,
+        "Prawn's\nBreakthrough",
+        {
+            fontFamily: "Georgia, serif",
+            fontSize: "27px",
+            fontStyle: "bold",
+            color: "#ffffff",
+            align: "center",
+            lineSpacing: 4
+        }
+    )
+        .setOrigin(0.5, 0)
+        .setDepth(depth + 1);
+}
+// END SPECIAL ORDER OVERLAY
+
 class GameScene extends Phaser.Scene {
     constructor() {
         super("game");
@@ -253,6 +410,7 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        addSpecialOrderOverlay(this);
         this.add.text(
             24,
             18,
@@ -277,7 +435,47 @@ class GameScene extends Phaser.Scene {
 
         this.drawBoard();
         this.createPosition();
-        this.playBreakthrough();
+
+        const bubble = this.add.text(
+            120,
+            110,
+            "I'll have the\nPrawn's Breakthrough.",
+            {
+                fontSize: "26px",
+                color: "#000000",
+                backgroundColor: "#ffffff",
+                padding: {
+                    left: 12,
+                    right: 12,
+                    top: 8,
+                    bottom: 8
+                }
+            }
+        );
+
+        bubble.setAlpha(0);
+
+        this.tweens.add({
+
+            targets: bubble,
+
+            alpha: 1,
+
+            duration: 500,
+
+            yoyo: true,
+
+            hold: 1800,
+
+            onComplete: () => {
+
+                bubble.destroy();
+
+                this.playBreakthrough();
+
+            }
+
+        });
     }
 }
 
