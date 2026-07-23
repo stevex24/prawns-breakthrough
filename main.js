@@ -4,74 +4,6 @@ function addSpecialOrderOverlay(scene) {
     const depth = 1000;
 
     // --------------------------------------------------------
-    // Customer speech bubble
-    // --------------------------------------------------------
-    const bubbleX = 55;
-    const bubbleY = 38;
-    const bubbleWidth = 265;
-    const bubbleHeight = 72;
-
-    const bubble = scene.add.graphics().setDepth(depth);
-
-    bubble.fillStyle(0xffffff, 0.98);
-    bubble.lineStyle(3, 0x242424, 1);
-
-    bubble.fillRoundedRect(
-        bubbleX,
-        bubbleY,
-        bubbleWidth,
-        bubbleHeight,
-        15
-    );
-
-    bubble.strokeRoundedRect(
-        bubbleX,
-        bubbleY,
-        bubbleWidth,
-        bubbleHeight,
-        15
-    );
-
-    // Speech-bubble tail.
-    bubble.fillStyle(0xffffff, 0.98);
-    bubble.fillTriangle(
-        bubbleX + 66,
-        bubbleY + bubbleHeight - 1,
-        bubbleX + 99,
-        bubbleY + bubbleHeight - 1,
-        bubbleX + 78,
-        bubbleY + bubbleHeight + 25
-    );
-
-    bubble.lineStyle(3, 0x242424, 1);
-    bubble.beginPath();
-    bubble.moveTo(
-        bubbleX + 66,
-        bubbleY + bubbleHeight - 1
-    );
-    bubble.lineTo(
-        bubbleX + 78,
-        bubbleY + bubbleHeight + 25
-    );
-    bubble.lineTo(
-        bubbleX + 99,
-        bubbleY + bubbleHeight - 1
-    );
-    bubble.strokePath();
-
-    scene.add.text(
-        bubbleX + 24,
-        bubbleY + 22,
-        "I'll have the special.",
-        {
-            fontFamily: "Georgia, serif",
-            fontSize: "22px",
-            color: "#161616",
-            fontStyle: "italic"
-        }
-    ).setDepth(depth + 1);
-
-    // --------------------------------------------------------
     // Checkmate Café menu
     // --------------------------------------------------------
     const menuX = 515;
@@ -409,6 +341,106 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+
+    showOrderBubble() {
+        const bubbleX = 55;
+        const bubbleY = 90;
+        const bubbleWidth = 350;
+        const bubbleHeight = 120;
+
+        const bubble = this.add.graphics();
+
+        bubble.fillStyle(0xffffff, 0.97);
+        bubble.lineStyle(4, 0x222222, 1);
+
+        bubble.fillEllipse(
+            bubbleX + bubbleWidth / 2,
+            bubbleY + bubbleHeight / 2,
+            bubbleWidth,
+            bubbleHeight
+        );
+
+        bubble.strokeEllipse(
+            bubbleX + bubbleWidth / 2,
+            bubbleY + bubbleHeight / 2,
+            bubbleWidth,
+            bubbleHeight
+        );
+
+        bubble.fillTriangle(
+            bubbleX + 115,
+            bubbleY + bubbleHeight - 4,
+            bubbleX + 155,
+            bubbleY + bubbleHeight - 4,
+            bubbleX + 85,
+            bubbleY + bubbleHeight + 70
+        );
+
+        bubble.lineBetween(
+            bubbleX + 115,
+            bubbleY + bubbleHeight,
+            bubbleX + 85,
+            bubbleY + bubbleHeight + 70
+        );
+
+        bubble.lineBetween(
+            bubbleX + 85,
+            bubbleY + bubbleHeight + 70,
+            bubbleX + 155,
+            bubbleY + bubbleHeight
+        );
+
+        const words = this.add.text(
+            bubbleX + bubbleWidth / 2,
+            bubbleY + bubbleHeight / 2 - 2,
+            "I think I'll have the\nPrawn's Breakthrough.",
+            {
+                fontFamily: "Georgia, serif",
+                fontSize: "25px",
+                color: "#111111",
+                align: "center",
+                lineSpacing: 5
+            }
+        );
+
+        words.setOrigin(0.5);
+
+        const bubbleParts = [bubble, words];
+
+        for (const part of bubbleParts) {
+            part.setAlpha(0);
+            part.setScale(0.75);
+            part.setDepth(20);
+        }
+
+        this.time.delayedCall(650, () => {
+            this.tweens.add({
+                targets: bubbleParts,
+                alpha: 1,
+                scale: 1,
+                duration: 350,
+                ease: "Back.easeOut",
+
+                onComplete: () => {
+                    this.time.delayedCall(1900, () => {
+                        this.tweens.add({
+                            targets: bubbleParts,
+                            alpha: 0,
+                            scale: 0.9,
+                            duration: 300,
+
+                            onComplete: () => {
+                                bubble.destroy();
+                                words.destroy();
+                                this.playBreakthrough();
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    }
+
     create() {
         addSpecialOrderOverlay(this);
         this.add.text(
@@ -422,12 +454,13 @@ class GameScene extends Phaser.Scene {
         );
 
         const restaurant = this.add.image(
-            275,
-            365,
+            350,
+            370,
             "restaurant"
         );
 
-        restaurant.setScale(0.55);
+        // Fill the left side of the scene without overlapping the board.
+        restaurant.setDisplaySize(680, 560);
 
         this.boardX = 760;
         this.boardY = 100;
@@ -436,46 +469,8 @@ class GameScene extends Phaser.Scene {
         this.drawBoard();
         this.createPosition();
 
-        const bubble = this.add.text(
-            120,
-            110,
-            "I'll have the\nPrawn's Breakthrough.",
-            {
-                fontSize: "26px",
-                color: "#000000",
-                backgroundColor: "#ffffff",
-                padding: {
-                    left: 12,
-                    right: 12,
-                    top: 8,
-                    bottom: 8
-                }
-            }
-        );
-
-        bubble.setAlpha(0);
-
-        this.tweens.add({
-
-            targets: bubble,
-
-            alpha: 1,
-
-            duration: 500,
-
-            yoyo: true,
-
-            hold: 1800,
-
-            onComplete: () => {
-
-                bubble.destroy();
-
-                this.playBreakthrough();
-
-            }
-
-        });
+        // Show one dynamically generated oval speech bubble.
+        this.showOrderBubble();
     }
 }
 
