@@ -342,6 +342,34 @@ class GameScene extends Phaser.Scene {
     }
 
 
+
+    focusMenuThenPlay() {
+        const camera = this.cameras.main;
+
+        const menuCenterX =
+            this.boardX + 4 * this.squareSize;
+
+        const menuCenterY =
+            this.boardY + 4 * this.squareSize;
+
+        camera.pan(
+            menuCenterX,
+            menuCenterY,
+            1000,
+            "Sine.easeInOut"
+        );
+
+        camera.zoomTo(
+            1.65,
+            1000,
+            "Sine.easeInOut"
+        );
+
+        this.time.delayedCall(1250, () => {
+            this.playBreakthrough();
+        });
+    }
+
     showOrderBubble() {
         const bubbleX = 55;
         const bubbleY = 90;
@@ -432,7 +460,7 @@ class GameScene extends Phaser.Scene {
                             onComplete: () => {
                                 bubble.destroy();
                                 words.destroy();
-                                this.playBreakthrough();
+                                this.focusMenuThenPlay();
                             }
                         });
                     });
