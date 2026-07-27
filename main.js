@@ -285,6 +285,9 @@ class GameScene extends Phaser.Scene {
     }
 
     async playBreakthrough() {
+        let completedCycles = 0;
+        let cameraReturned = false;
+
         while (true) {
             await this.wait(700);
 
@@ -336,12 +339,159 @@ class GameScene extends Phaser.Scene {
 
             await this.wait(1600);
 
+            completedCycles += 1;
+
             this.destroyPosition();
             this.createPosition();
+
+            // After two full-screen cycles, return to the café.
+            if (
+                completedCycles === 2 &&
+                !cameraReturned
+            ) {
+                await this.returnToRestaurant();
+                cameraReturned = true;
+            }
         }
     }
 
 
+
+
+    returnToRestaurant() {
+        const camera = this.cameras.main;
+
+        return new Promise(resolve => {
+            camera.pan(
+                this.scale.width / 2,
+                this.scale.height / 2,
+                1100,
+                "Sine.easeInOut"
+            );
+
+            camera.zoomTo(
+                1,
+                1100,
+                "Sine.easeInOut"
+            );
+
+            this.time.delayedCall(
+                1200,
+                resolve
+            );
+        });
+    }
+
+
+    showMenuOpeningThenFocus() {
+        // Temporary menu drawn in Phaser.
+        // Later this can be replaced with the illustrated concept menu.
+        const menu = this.add.container(445, 430);
+        menu.setDepth(15);
+
+        const pages = this.add.graphics();
+
+        pages.fillStyle(0xf8efd7, 1);
+        pages.lineStyle(4, 0x5b3a22, 1);
+
+        // Left and right pages.
+        pages.fillRoundedRect(-150, -105, 145, 210, 12);
+        pages.strokeRoundedRect(-150, -105, 145, 210, 12);
+
+        pages.fillRoundedRect(5, -105, 145, 210, 12);
+        pages.strokeRoundedRect(5, -105, 145, 210, 12);
+
+        // Center fold.
+        pages.lineBetween(0, -100, 0, 100);
+
+        const heading = this.add.text(
+            77,
+            -70,
+            "TODAY'S\nSPECIAL",
+            {
+                fontFamily: "Georgia, serif",
+                fontSize: "19px",
+                color: "#5b2418",
+                align: "center",
+                fontStyle: "bold"
+            }
+        );
+
+        heading.setOrigin(0.5);
+
+        const item = this.add.text(
+            77,
+            20,
+            "Prawn's\nBreakthrough",
+            {
+                fontFamily: "Georgia, serif",
+                fontSize: "18px",
+                color: "#111111",
+                align: "center"
+            }
+        );
+
+        item.setOrigin(0.5);
+
+        const leftPage = this.add.text(
+            -77,
+            0,
+            "CHECKMATE\nCAFÉ",
+            {
+                fontFamily: "Georgia, serif",
+                fontSize: "18px",
+                color: "#3c2a1c",
+                align: "center",
+                fontStyle: "bold"
+            }
+        );
+
+        leftPage.setOrigin(0.5);
+
+        menu.add([pages, heading, item, leftPage]);
+
+        // Begin nearly closed, as though opening around its center fold.
+        menu.setScale(0.08, 0.78);
+        menu.setAlpha(0);
+        menu.setAngle(-4);
+
+        this.tweens.add({
+            targets: menu,
+            alpha: 1,
+            scaleX: 1,
+            scaleY: 1,
+            angle: 0,
+            duration: 700,
+            ease: "Back.easeOut",
+
+            onComplete: () => {
+                this.time.delayedCall(750, () => {
+                    this.tweens.add({
+                        targets: menu,
+                        y: menu.y - 25,
+                        scaleX: 1.08,
+                        scaleY: 1.08,
+                        duration: 450,
+                        ease: "Sine.easeInOut",
+
+                        onComplete: () => {
+                            this.focusMenuThenPlay();
+
+                            this.tweens.add({
+                                targets: menu,
+                                alpha: 0,
+                                duration: 450,
+
+                                onComplete: () => {
+                                    menu.destroy(true);
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    }
 
     focusMenuThenPlay() {
         const camera = this.cameras.main;
@@ -371,8 +521,8 @@ class GameScene extends Phaser.Scene {
     }
 
     showOrderBubble() {
-        const bubbleX = 55;
-        const bubbleY = 90;
+        const bubbleX = 170;
+        const bubbleY = 70;
         const bubbleWidth = 350;
         const bubbleHeight = 120;
 
@@ -396,11 +546,11 @@ class GameScene extends Phaser.Scene {
         );
 
         bubble.fillTriangle(
-            bubbleX + 115,
+            bubbleX + 175,
             bubbleY + bubbleHeight - 4,
-            bubbleX + 155,
+            bubbleX + 215,
             bubbleY + bubbleHeight - 4,
-            bubbleX + 85,
+            bubbleX + 195,
             bubbleY + bubbleHeight + 70
         );
 
@@ -460,7 +610,7 @@ class GameScene extends Phaser.Scene {
                             onComplete: () => {
                                 bubble.destroy();
                                 words.destroy();
-                                this.focusMenuThenPlay();
+                                this.showMenuOpeningThenFocus();
                             }
                         });
                     });
@@ -483,12 +633,21 @@ class GameScene extends Phaser.Scene {
 
         const restaurant = this.add.image(
             350,
-            370,
+            375,
             "restaurant"
         );
 
-        // Fill the left side of the scene without overlapping the board.
-        restaurant.setDisplaySize(680, 560);
+        // Preserve the illustration's original proportions.
+        // Fit it inside a 680 × 560 region without stretching.
+        const maximumRestaurantWidth = 680;
+        const maximumRestaurantHeight = 560;
+
+        const restaurantScale = Math.min(
+            maximumRestaurantWidth / restaurant.width,
+            maximumRestaurantHeight / restaurant.height
+        );
+
+        restaurant.setScale(restaurantScale);
 
         this.boardX = 760;
         this.boardY = 100;
