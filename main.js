@@ -386,7 +386,7 @@ class GameScene extends Phaser.Scene {
     showMenuOpeningThenFocus() {
         // Temporary menu drawn in Phaser.
         // Later this can be replaced with the illustrated concept menu.
-        const menu = this.add.container(445, 430);
+        const menu = this.add.container(430, 445);
         menu.setDepth(15);
 
         const pages = this.add.graphics();
@@ -451,9 +451,9 @@ class GameScene extends Phaser.Scene {
         menu.add([pages, heading, item, leftPage]);
 
         // Begin nearly closed, as though opening around its center fold.
-        menu.setScale(0.08, 0.78);
-        menu.setAlpha(0);
-        menu.setAngle(-4);
+        menu.setScale(0.28, 0.42);
+        menu.setAlpha(0.88);
+        menu.setAngle(-11);
 
         this.tweens.add({
             targets: menu,
@@ -461,17 +461,18 @@ class GameScene extends Phaser.Scene {
             scaleX: 1,
             scaleY: 1,
             angle: 0,
-            duration: 700,
+            duration: 850,
             ease: "Back.easeOut",
 
             onComplete: () => {
                 this.time.delayedCall(750, () => {
                     this.tweens.add({
                         targets: menu,
-                        y: menu.y - 25,
-                        scaleX: 1.08,
-                        scaleY: 1.08,
-                        duration: 450,
+                        x: menu.x + 20,
+                        y: menu.y - 95,
+                        scaleX: 1.18,
+                        scaleY: 1.18,
+                        duration: 650,
                         ease: "Sine.easeInOut",
 
                         onComplete: () => {
