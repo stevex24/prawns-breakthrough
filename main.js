@@ -377,7 +377,19 @@ class GameScene extends Phaser.Scene {
 
             this.time.delayedCall(
                 1200,
-                resolve
+                () => {
+
+                    this.tweens.add({
+                        targets: camera,
+                        zoom: 1.02,
+                        duration: 180,
+                        yoyo: true,
+                        ease: "Sine.easeInOut",
+
+                        onComplete: resolve
+                    });
+
+                }
             );
         });
     }
@@ -572,7 +584,7 @@ class GameScene extends Phaser.Scene {
         const words = this.add.text(
             bubbleX + bubbleWidth / 2,
             bubbleY + bubbleHeight / 2 - 2,
-            "I think I'll have the\nPrawn's Breakthrough.",
+            "I think I'll try the\nPrawn's Breakthrough.",
             {
                 fontFamily: "Georgia, serif",
                 fontSize: "25px",
@@ -611,7 +623,12 @@ class GameScene extends Phaser.Scene {
                             onComplete: () => {
                                 bubble.destroy();
                                 words.destroy();
-                                this.showMenuOpeningThenFocus();
+                                this.time.delayedCall(
+            450,
+            () => {
+                this.showMenuOpeningThenFocus();
+            }
+        );
                             }
                         });
                     });
