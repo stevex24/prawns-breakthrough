@@ -488,7 +488,12 @@ class GameScene extends Phaser.Scene {
                         ease: "Sine.easeInOut",
 
                         onComplete: () => {
-                            this.focusMenuThenPlay();
+                            this.time.delayedCall(
+                                500,
+                                () => {
+                                    this.focusMenuThenPlay();
+                                }
+                            );
 
                             this.tweens.add({
                                 targets: menu,
