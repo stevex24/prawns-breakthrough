@@ -477,7 +477,7 @@ class GameScene extends Phaser.Scene {
             ease: "Back.easeOut",
 
             onComplete: () => {
-                this.time.delayedCall(750, () => {
+                this.time.delayedCall(1500, () => {
                     this.tweens.add({
                         targets: menu,
                         x: menu.x + 20,
