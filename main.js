@@ -465,15 +465,18 @@ class GameScene extends Phaser.Scene {
         // Begin nearly closed, as though opening around its center fold.
         menu.setScale(0.28, 0.42);
         menu.setAlpha(0.88);
-        menu.setAngle(-11);
+
+        // Slightly folded shut.
+        menu.setAngle(-18);
 
         this.tweens.add({
             targets: menu,
             alpha: 1,
             scaleX: 1,
             scaleY: 1,
-            angle: 0,
+            angle: 4,
             duration: 850,
+            yoyo: true,
             ease: "Back.easeOut",
 
             onComplete: () => {
