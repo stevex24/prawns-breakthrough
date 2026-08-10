@@ -103,6 +103,11 @@ class GameScene extends Phaser.Scene {
             "prawn",
             "assets/prawn.png"
         );
+
+        this.load.image(
+            "balalaikaPlayer",
+            "assets/balalaika-player.png?v=2"
+        );
     }
 
     square(squareName) {
@@ -166,7 +171,7 @@ class GameScene extends Phaser.Scene {
                 "prawn"
             );
 
-            prawn.setDisplaySize(50, 50);
+            prawn.setDisplaySize(46, 46);
 
             // Black's prawns use the same artwork with a dark tint.
             if (color === 0x333333) {
@@ -191,14 +196,18 @@ class GameScene extends Phaser.Scene {
     makeKing(squareName, color) {
         const position = this.square(squareName);
 
+        const isWhite = color === "#ffffff";
+
         const king = this.add.text(
             position.x,
             position.y,
-            "K",
+            isWhite ? "♔" : "♚",
             {
-                fontSize: "36px",
+                fontFamily: "Georgia, serif",
+                fontSize: "58px",
                 color: color,
-                fontStyle: "bold"
+                stroke: isWhite ? "#222222" : "#eeeeee",
+                strokeThickness: 1
             }
         );
 
@@ -240,16 +249,17 @@ class GameScene extends Phaser.Scene {
         const target = this.square(destination);
 
         return new Promise(resolve => {
-            // A tiny repeated rocking motion suggests comic crawling.
+            // Simple comic rocking motion.
             const scuttle = this.tweens.add({
                 targets: piece,
                 angle: {
-                    from: -6,
-                    to: 6
+                    from: -7,
+                    to: 7
                 },
-                duration: 110,
+                duration: 105,
                 yoyo: true,
-                repeat: -1
+                repeat: -1,
+                ease: "Sine.easeInOut"
             });
 
             this.tweens.add({
@@ -434,7 +444,7 @@ class GameScene extends Phaser.Scene {
         const item = this.add.text(
             77,
             20,
-            "Prawn's\nBreakthrough",
+            "HOUSE\nSPECIAL",
             {
                 fontFamily: "Georgia, serif",
                 fontSize: "18px",
@@ -592,7 +602,7 @@ class GameScene extends Phaser.Scene {
         const words = this.add.text(
             bubbleX + bubbleWidth / 2,
             bubbleY + bubbleHeight / 2 - 2,
-            "I think I'll try the\nPrawn's Breakthrough.",
+            "I think I'll try the\nHouse Special.",
             {
                 fontFamily: "Georgia, serif",
                 fontSize: "25px",
@@ -674,6 +684,17 @@ class GameScene extends Phaser.Scene {
         );
 
         restaurant.setScale(restaurantScale);
+
+        // Subtle musician in the rear of the café.
+        const balalaikaPlayer = this.add.image(
+            240,
+            330,
+            "balalaikaPlayer"
+        );
+
+        balalaikaPlayer.setScale(0.09);
+        balalaikaPlayer.setDepth(2);
+
 
         this.boardX = 760;
         this.boardY = 100;

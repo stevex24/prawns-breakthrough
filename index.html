@@ -8,5 +8,32 @@
 </head>
 <body>
     <script src="main.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const music = new Audio(
+        "assets/santa-lucia-tremolo-strong-decay.mp3"
+    );
+
+    music.loop = true;
+    music.volume = 0.035;
+
+    const startMusic = async () => {
+        try {
+            await music.play();
+            console.log("Santa Lucia started");
+        } catch (error) {
+            console.error("Music failed:", error);
+        }
+    };
+
+    document.addEventListener(
+        "click",
+        startMusic,
+        { once: true }
+    );
+});
+</script>
+
 </body>
 </html>
