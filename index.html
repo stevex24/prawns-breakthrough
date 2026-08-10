@@ -5,9 +5,61 @@
     <title>The Prawn's Breakthrough</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        #cafe-entry {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20, 16, 10, 0.88);
+            z-index: 9999;
+            font-family: Georgia, serif;
+        }
+
+        #cafe-entry-card {
+            text-align: center;
+            background: #f4ead7;
+            padding: 34px 44px;
+            border-radius: 18px;
+            border: 3px solid #5a3b22;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+        }
+
+        #cafe-entry h1 {
+            margin: 0 0 8px;
+            font-size: 34px;
+        }
+
+        #cafe-entry p {
+            margin: 0 0 22px;
+            font-size: 18px;
+            font-style: italic;
+        }
+
+        #enter-cafe {
+            font-family: Georgia, serif;
+            font-size: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
 <body>
-    <script src="main.js"></script>
+
+<div id="cafe-entry">
+    <div id="cafe-entry-card">
+        <h1>Checkmate Café</h1>
+        <p>Chess served à la carte</p>
+        <button id="enter-cafe">
+            Enter Checkmate Café
+        </button>
+    </div>
+</div>
+
+<script src="main.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,20 +70,19 @@ document.addEventListener("DOMContentLoaded", () => {
     music.loop = true;
     music.volume = 0.035;
 
-    const startMusic = async () => {
+    const entry = document.getElementById("cafe-entry");
+    const button = document.getElementById("enter-cafe");
+
+    button.addEventListener("click", async () => {
         try {
             await music.play();
             console.log("Santa Lucia started");
         } catch (error) {
             console.error("Music failed:", error);
         }
-    };
 
-    document.addEventListener(
-        "click",
-        startMusic,
-        { once: true }
-    );
+        entry.remove();
+    });
 });
 </script>
 
