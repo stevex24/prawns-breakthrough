@@ -67,8 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "assets/santa-lucia-tremolo-strong-decay.mp3"
     );
 
-    music.loop = true;
-    music.volume = 0.035;
+    music.loop = false;
+    music.volume = 0.025;
+      music.playbackRate = 1.05;
 
     const entry = document.getElementById("cafe-entry");
     const button = document.getElementById("enter-cafe");
